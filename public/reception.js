@@ -65,5 +65,5 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
       }
 
       // 現在番号を表示
-      document.getElementById("now-number").textContent = data.id;
+      document.getElementById("now-number").textContent = data.id + 1;
     });
