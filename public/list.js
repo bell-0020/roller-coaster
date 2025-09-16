@@ -56,7 +56,15 @@ async function renderTickets() {
         if (!res.ok) throw new Error("送信失敗");
 
         alert(`整理番号 ${ticket.id} に通知しました`);
-        await supabase.from("tickets").update({ called: true }).eq("id", ticket.id);
+        //await supabase.from("tickets").update({ called: true }).eq("id", ticket.id);
+        const { data: updated, error } = await supabase
+          .from("tickets")
+          .update({ called: true })
+          .eq("id", ticket.id);
+
+        if (error) console.error("Update failed:", error);
+        else console.log("Updated ticket:", updated);
+
         renderTickets(); // 更新後の状態を反映
       } catch (err) {
         alert("通知送信に失敗しました");
