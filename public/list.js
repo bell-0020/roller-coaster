@@ -59,7 +59,7 @@ async function renderTickets() {
         //await supabase.from("tickets").update({ called: true }).eq("id", ticket.id);
         const { data: updated, error } = await supabase
           .from("tickets")
-          .update({ called: true })
+          .update({ called: true }, { returning: "representation" })
           .eq("id", ticket.id);
 
         if (error) console.error("Update failed:", error);
