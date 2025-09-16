@@ -45,33 +45,54 @@ async function renderTickets() {
     btn.disabled = ticket.called;
 
     btn.addEventListener("click", async () => {
-      // 通知送信
-      const res = await fetch("/notify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          subscription: {
-            endpoint: ticket.endpoint,
-            keys: { p256dh: ticket.p256dh, auth: ticket.auth }
-          },
-          title: "順番が来ました！",
-          body: `整理番号 ${ticket.id} の方、受付へお越しください。`
+  // 無効化
+      btn.disabled = true;
+      btn.textContent = "送信中...";
+      btn.style.backgroundColor = "#ccc";
+      btn.style.cursor = "not-allowed";
+
+      try {
+        const res = await fetch("/notify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            subscription: {
+              endpoint: ticket.endpoint,
+              keys: { p256dh: ticket.p256dh, auth: ticket.auth }
+        },
+        title: "順番が来ました！",
+        body: `整理番号 ${ticket.id} の方、受付へお越しください。`
         })
       });
 
       if (res.ok) {
         alert(`整理番号 ${ticket.id} に通知しました`);
-        // DB更新
-        await supabase
-          .from("tickets")
-          .update({ called: true })
-          .eq("id", ticket.id);
-        // ボタン更新
-        renderTickets(); // 更新後の状態を描画
+        // DBのcalledをtrueに更新
+        await supabase.from("tickets").update({ called: true }).eq("id", ticket.id);
       } else {
         alert("通知送信に失敗しました");
+        // 失敗したら元に戻す
+        btn.disabled = false;
+        btn.textContent = "呼び出し";
+        btn.style.backgroundColor = "#4CAF50";
+        btn.style.cursor = "pointer";
+        return;
       }
-    });
+    } catch (err) {
+      alert("通知送信でエラーが発生しました");
+      btn.disabled = false;
+      btn.textContent = "呼び出し";
+      btn.style.backgroundColor = "#4CAF50";
+      btn.style.cursor = "pointer";
+      return;
+    }
+
+    // ボタン文言を呼び出し済みに更新
+    btn.textContent = "呼び出し済み";
+    btn.style.backgroundColor = "#ccc";
+    btn.style.cursor = "not-allowed";
+  });
+
 
     tdBtn.appendChild(btn);
     tr.appendChild(tdBtn);
