@@ -5,3 +5,4 @@ self.addEventListener("push", event => {
     icon: "/icon.png"
   });
 });
+

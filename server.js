@@ -20,7 +20,6 @@ webpush.setVapidDetails(
 // 通知API
 app.post("/notify", async (req, res) => {
   const { subscription, title, body } = req.body;
-
   try {
     await webpush.sendNotification(subscription, JSON.stringify({ title, body }));
     res.sendStatus(201);
@@ -31,6 +30,5 @@ app.post("/notify", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+

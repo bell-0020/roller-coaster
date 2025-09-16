@@ -6,19 +6,15 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const VAPID_PUBLIC_KEY = "BJYGAQgw2pA3xMk4yCKACorIMax3mtWYy6FDBdoJof-QiDqzZzImpkDEmuV0VghL007x6XdofSM3n8xSq7z3aE4";
 
-// VAPID→Uint8Array変換
+// VAPID → Uint8Array 変換
 function urlBase64ToUint8Array(base64String) {
   const padding = "=".repeat((4 - base64String.length % 4) % 4);
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
   const rawData = atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
+  return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
 }
 
-// Push通知購読処理
+// Push通知購読
 async function subscribePush() {
   if (!("serviceWorker" in navigator)) {
     alert("このブラウザはService Workerに対応していません");
@@ -37,7 +33,7 @@ async function subscribePush() {
   return sub.toJSON();
 }
 
-// 整理券の最新番号を取得して画面に表示
+// 最新番号取得
 async function showNextNumber() {
   const { data, error } = await supabase
     .from("tickets")
@@ -51,11 +47,7 @@ async function showNextNumber() {
     return;
   }
 
-  let nextId = 1;
-  if (data && data.length > 0) {
-    nextId = data[0].id + 1;
-  }
-
+  const nextId = (data?.[0]?.id ?? 0) + 1;
   document.getElementById("now-number").textContent = nextId;
 }
 
@@ -81,10 +73,11 @@ document.getElementById("get").addEventListener("click", async () => {
   }
 
   document.getElementById("now-number").textContent = data.id;
-  document.getElementById("number-plain").textContent = "あなたの整理番号"
+  document.getElementById("number-plain").textContent = "あなたの整理番号";
   document.getElementById("get").disabled = true;
   document.getElementById("get").textContent = "取得済み";
 });
 
 // 初期表示
 showNextNumber();
+
