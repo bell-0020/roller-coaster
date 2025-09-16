@@ -5,25 +5,34 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function loadTickets() {
-  const ul = document.getElementById("ticket-list");
+  const tbody = document.getElementById("ticket-list");
+  tbody.innerHTML = "<tr><td colspan='2'>読み込み中...</td></tr>";
+
   const { data, error } = await supabase
     .from("tickets")
     .select("id, created_at")
-    .order("id");
+    .order("id", { ascending: true });
 
   if (error) {
-    ul.innerHTML = "<li>読み込み失敗</li>";
+    console.error(error);
+    tbody.innerHTML = "<tr><td colspan='2'>読み込み失敗</td></tr>";
     return;
   }
 
   if (!data.length) {
-    ul.innerHTML = "<li>整理券なし</li>";
+    tbody.innerHTML = "<tr><td colspan='2'>整理券なし</td></tr>";
     return;
   }
 
-  ul.innerHTML = data.map(
-    t => `<li>#${t.id} - ${new Date(t.created_at).toLocaleString()}</li>`
+  tbody.innerHTML = data.map(
+    t => `
+      <tr>
+        <td>${t.id}</td>
+        <td>${new Date(t.created_at).toLocaleString()}</td>
+      </tr>
+    `
   ).join("");
 }
 
 loadTickets();
+

@@ -4,11 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>整理券一覧</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; max-width: 600px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background: #f0f0f0; }
+  </style>
 </head>
 <body>
   <h1>整理券一覧</h1>
-  <ul id="ticket-list">読み込み中...</ul>
+  <table>
+    <thead>
+      <tr>
+        <th>番号</th>
+        <th>発行日時</th>
+      </tr>
+    </thead>
+    <tbody id="ticket-list">
+      <tr><td colspan="2">読み込み中...</td></tr>
+    </tbody>
+  </table>
 
   <script type="module" src="list.js"></script>
 </body>
 </html>
+
