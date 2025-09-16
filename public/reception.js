@@ -43,12 +43,17 @@ async function showNextNumber() {
     .from("tickets")
     .select("id")
     .order("id", { ascending: false })
-    .limit(1)
-    .single();
+    .limit(1);
+
+  if (error) {
+    console.error(error);
+    document.getElementById("now-number").textContent = "エラー";
+    return;
+  }
 
   let nextId = 1;
-  if (data && data.id) {
-    nextId = data.id + 1;
+  if (data && data.length > 0) {
+    nextId = data[0].id + 1;
   }
 
   document.getElementById("now-number").textContent = nextId;
@@ -76,6 +81,9 @@ document.getElementById("get").addEventListener("click", async () => {
   }
 
   document.getElementById("now-number").textContent = data.id;
+  document.getElementById("number-plain").textContent = "あなたの整理番号"
+  document.getElementById("get").disabled = true;
+  document.getElementById("get").textContent = "取得済み";
 });
 
 // 初期表示
