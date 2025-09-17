@@ -53,25 +53,34 @@ async function showNextNumber() {
 
 // 整理券取得
 document.getElementById("get").addEventListener("click", async () => {
-  const sub = await subscribePush();
-  if (!sub) return;
+  console.log("ボタン押下");
+
+  let sub = null;
+  if ("Notification" in window) {
+    const permission = await Notification.requestPermission();
+    console.log("通知権限:", permission);
+    if (permission === "granted") {
+      sub = await subscribePush(); // ← この中で serviceWorker.subscribe
+    }
+  }
 
   const { data, error } = await supabase
     .from("tickets")
     .insert([{
-      endpoint: sub.endpoint,
-      p256dh: sub.keys.p256dh,
-      auth: sub.keys.auth
+      endpoint: sub ? sub.endpoint : null,
+      p256dh: sub ? sub.keys.p256dh : null,
+      auth: sub ? sub.keys.auth : null
     }])
     .select("id")
     .single();
 
   if (error) {
-    console.error(error);
+    console.error("発行エラー：", error);
     alert("整理券の発行に失敗しました");
     return;
   }
 
+  console.log("発行完了:", data);
   document.getElementById("now-number").textContent = data.id;
   document.getElementById("number-plain").textContent = "あなたの整理番号";
   document.getElementById("get").disabled = true;
